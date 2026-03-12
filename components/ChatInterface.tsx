@@ -234,7 +234,7 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
   };
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-4rem)]">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Sidebars */}
       <AgentSidebar
         selectedSlug={selectedSlug}

@@ -7,9 +7,6 @@
 @layer base {
   html, body {
     @apply bg-brutal-white text-brutal-black font-sans antialiased;
-    height: 100%;
-    height: 100dvh;
-    overflow: hidden;
   }
 
   ::selection {
