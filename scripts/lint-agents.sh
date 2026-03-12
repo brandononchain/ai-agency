@@ -22,6 +22,9 @@ AGENT_DIRS=(
   support
   spatial-computing
   specialized
+  web3
+  ai-ops
+  data-science
 )
 
 REQUIRED_FRONTMATTER=("name" "description" "color")

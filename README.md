@@ -222,12 +222,47 @@ Building the immersive future.
 | 🍎 [visionOS Spatial Engineer](spatial-computing/visionos-spatial-engineer.md) | Apple Vision Pro development | Vision Pro apps, spatial computing experiences |
 | 🔌 [Terminal Integration Specialist](spatial-computing/terminal-integration-specialist.md) | Terminal integration, command-line tools | CLI tools, terminal workflows, developer tools |
 
+### ⛓️ Web3 & Blockchain Division
+
+Building the decentralized future — from smart contracts to tokenomics.
+
+| Agent | Specialty | When to Use |
+|-------|-----------|-------------|
+| 🏗️ [DeFi Protocol Architect](web3/web3-defi-architect.md) | Protocol design, tokenomics, liquidity mechanisms | Designing DeFi protocols, lending markets, AMMs, yield systems |
+| ⛓️ [Smart Contract Developer](web3/web3-smart-contract-developer.md) | Solidity, Foundry, gas optimization, upgradeable contracts | Production smart contract development, testing, deployment |
+| 📊 [On-Chain Data Analyst](web3/web3-onchain-analyst.md) | Wallet profiling, DeFi metrics, transaction forensics | On-chain analytics, whale tracking, exploit investigation |
+| 🌐 [dApp Frontend Developer](web3/web3-dapp-developer.md) | wagmi, viem, wallet integration, transaction UX | Building Web3 frontends with wallet connection and on-chain data |
+| 💰 [Tokenomics Strategist](web3/web3-tokenomics-strategist.md) | Mechanism design, game theory, incentive alignment | Token economy design, emission modeling, governance structures |
+| 🎨 [NFT & Digital Asset Architect](web3/web3-nft-architect.md) | ERC-721/1155, generative art, marketplace integration | NFT collections, digital assets, token-gated experiences |
+
+### 🤖 AI Operations Division
+
+Building, deploying, and operating AI systems at production scale.
+
+| Agent | Specialty | When to Use |
+|-------|-----------|-------------|
+| ⚙️ [MLOps Engineer](ai-ops/ai-ops-mlops-engineer.md) | ML pipelines, model serving, training infrastructure | Production ML deployment, model monitoring, retraining automation |
+| 🧪 [Prompt Engineer](ai-ops/ai-ops-prompt-engineer.md) | LLM system design, evaluation frameworks, prompt optimization | Building reliable AI applications, prompt testing, quality measurement |
+| 🔍 [RAG Systems Architect](ai-ops/ai-ops-rag-architect.md) | Vector search, embeddings, chunking, knowledge retrieval | Building RAG pipelines, knowledge bases, grounded AI systems |
+| 🛡️ [AI Safety Engineer](ai-ops/ai-ops-ai-safety-engineer.md) | Guardrails, bias detection, adversarial robustness | AI content safety, fairness auditing, responsible AI deployment |
+
+### 📊 Data Science Division
+
+Turning data into decisions that move the business.
+
+| Agent | Specialty | When to Use |
+|-------|-----------|-------------|
+| 📈 [Data Analyst](data-science/data-science-analyst.md) | EDA, statistical testing, business intelligence | A/B test analysis, dashboards, actionable business insights |
+| 🔧 [Data Platform Engineer](data-science/data-science-data-engineer.md) | Data pipelines, warehouse architecture, dbt, Airflow | Building data infrastructure, ETL/ELT, data quality systems |
+| 🔬 [ML Research Scientist](data-science/data-science-ml-researcher.md) | Model architecture, training optimization, experiment design | ML research, model development, research-to-production translation |
+
 ### 🎯 Specialized Division
 
 The unique specialists who don't fit in a box.
 
 | Agent | Specialty | When to Use |
 |-------|-----------|-------------|
+| 🎯 [Chief AI Officer](specialized/chief-ai-officer.md) | Agency orchestration, strategic planning, cross-division coordination | Complex multi-division projects, team assembly, project decomposition |
 | 🎭 [Agents Orchestrator](specialized/agents-orchestrator.md) | Multi-agent coordination, workflow management | Complex projects requiring multiple agent coordination |
 | 🔍 [LSP/Index Engineer](specialized/lsp-index-engineer.md) | Language Server Protocol, code intelligence | Code intelligence systems, LSP implementation, semantic indexing |
 | 📥 [Sales Data Extraction Agent](specialized/sales-data-extraction-agent.md) | Excel monitoring, sales metric extraction | Sales data ingestion, MTD/YTD/Year End metrics |
@@ -350,7 +385,36 @@ Building worlds, systems, and experiences across every major engine.
 
 ---
 
-### Scenario 4: Full Agency Product Discovery
+### Scenario 5: DeFi Protocol Launch
+
+**Your Team**:
+1. 🏗️ **DeFi Protocol Architect** - Protocol design and tokenomics modeling
+2. ⛓️ **Smart Contract Developer** - Solidity implementation with Foundry tests
+3. 🛡️ **Blockchain Security Auditor** - Pre-deployment security audit
+4. 🌐 **dApp Frontend Developer** - Wallet-connected frontend with wagmi
+5. 💰 **Tokenomics Strategist** - Token economy and incentive design
+6. 📊 **On-Chain Data Analyst** - Launch monitoring and whale tracking
+7. 🚀 **Growth Hacker** - Web3 community growth strategy
+
+**Result**: Secure, audited DeFi protocol with sustainable tokenomics and a production dApp — from whitepaper to mainnet.
+
+---
+
+### Scenario 6: AI-Powered Application
+
+**Your Team**:
+1. 🔍 **RAG Systems Architect** - Knowledge retrieval pipeline
+2. 🧪 **Prompt Engineer** - System prompt design and evaluation
+3. ⚙️ **MLOps Engineer** - Model serving infrastructure
+4. 🛡️ **AI Safety Engineer** - Guardrails and bias testing
+5. 🏗️ **Backend Architect** - API and data infrastructure
+6. 🎨 **Frontend Developer** - User interface
+
+**Result**: Production AI application with grounded responses, safety guardrails, and measurable quality — not a demo that breaks on edge cases.
+
+---
+
+### Scenario 7: Full Agency Product Discovery
 
 **Your Team**: All 8 divisions working in parallel on a single mission.
 
@@ -441,10 +505,11 @@ Each agent is designed with:
 
 ## 📊 Stats
 
-- 🎭 **120 Specialized Agents** across 12 divisions
-- 📝 **10,000+ lines** of personality, process, and code examples
+- 🎭 **135+ Specialized Agents** across 15 divisions
+- 📝 **15,000+ lines** of personality, process, and code examples
 - ⏱️ **Months of iteration** from real-world usage
 - 🌟 **Battle-tested** in production environments
+- ⛓️ **Web3, AI Ops, & Data Science** divisions for the frontier
 - 💬 **50+ requests** in first 12 hours on Reddit
 
 ---
