@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@layer base {
+  body {
+    @apply bg-brutal-white text-brutal-black font-sans antialiased;
+  }
+
+  ::selection {
+    @apply bg-brutal-yellow text-brutal-black;
+  }
+
+  * {
+    @apply border-brutal-black;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-brutal-white;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brutal-black;
+  }
+}
+
+@layer components {
+  .brutal-card {
+    @apply bg-white border-3 border-brutal-black shadow-brutal transition-all duration-150;
+  }
+
+  .brutal-card:hover {
+    @apply shadow-brutal-hover translate-x-1 translate-y-1;
+  }
+
+  .brutal-btn {
+    @apply inline-flex items-center justify-center px-6 py-3
+      bg-brutal-black text-white font-mono font-bold uppercase tracking-wider
+      border-3 border-brutal-black shadow-brutal-sm
+      transition-all duration-150 cursor-pointer
+      hover:bg-brutal-yellow hover:text-brutal-black hover:shadow-brutal-hover hover:translate-x-0.5 hover:translate-y-0.5
+      active:shadow-none active:translate-x-1 active:translate-y-1;
+  }
+
+  .brutal-btn-outline {
+    @apply inline-flex items-center justify-center px-6 py-3
+      bg-white text-brutal-black font-mono font-bold uppercase tracking-wider
+      border-3 border-brutal-black shadow-brutal-sm
+      transition-all duration-150 cursor-pointer
+      hover:bg-brutal-black hover:text-white hover:shadow-brutal-hover hover:translate-x-0.5 hover:translate-y-0.5
+      active:shadow-none active:translate-x-1 active:translate-y-1;
+  }
+
+  .brutal-input {
+    @apply w-full px-4 py-3 bg-white text-brutal-black font-mono
+      border-3 border-brutal-black
+      focus:outline-none focus:ring-0 focus:shadow-brutal-sm
+      placeholder:text-gray-400;
+  }
+
+  .border-3 {
+    border-width: 3px;
+  }
+}
+
+/* Cursor blink animation for streaming */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: "▊";
+  animation: blink 0.8s step-end infinite;
+  @apply text-brutal-black ml-0.5;
+}
+
+/* Markdown content styling in chat */
+.chat-markdown h1,
+.chat-markdown h2,
+.chat-markdown h3 {
+  @apply font-bold mt-4 mb-2;
+}
+.chat-markdown h1 { @apply text-xl; }
+.chat-markdown h2 { @apply text-lg; }
+.chat-markdown h3 { @apply text-base; }
+
+.chat-markdown p {
+  @apply mb-3 leading-relaxed;
+}
+
+.chat-markdown ul, .chat-markdown ol {
+  @apply mb-3 pl-6;
+}
+.chat-markdown ul { @apply list-disc; }
+.chat-markdown ol { @apply list-decimal; }
+.chat-markdown li { @apply mb-1; }
+
+.chat-markdown code {
+  @apply font-mono text-sm bg-gray-100 px-1.5 py-0.5 border border-gray-300;
+}
+
+.chat-markdown pre {
+  @apply mb-3 p-4 bg-brutal-black text-green-400 font-mono text-sm overflow-x-auto border-3 border-brutal-black;
+}
+
+.chat-markdown pre code {
+  @apply bg-transparent border-none p-0 text-green-400;
+}
+
+.chat-markdown blockquote {
+  @apply border-l-4 border-brutal-black pl-4 italic my-3 text-gray-700;
+}
+
+.chat-markdown a {
+  @apply text-brutal-blue underline underline-offset-2;
+}
+
+.chat-markdown strong {
+  @apply font-bold;
+}
+
+.chat-markdown table {
+  @apply w-full mb-3 border-collapse border-3 border-brutal-black;
+}
+.chat-markdown th {
+  @apply bg-brutal-black text-white font-mono text-sm px-3 py-2 text-left;
+}
+.chat-markdown td {
+  @apply border border-gray-300 px-3 py-2 text-sm;
+}

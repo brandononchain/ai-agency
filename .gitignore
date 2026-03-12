@@ -56,6 +56,11 @@ coverage/
 dist/
 build/
 *.egg-info/
+.next/
+
+# Environment variables
+.env.local
+.env*.local
 
 # Personal notes and scratch files
 scratch/
