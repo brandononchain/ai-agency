@@ -67,7 +67,12 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
       });
 
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        let errDetail = `API error: ${response.status}`;
+        try {
+          const errBody = await response.json();
+          if (errBody.error) errDetail = errBody.error;
+        } catch {}
+        throw new Error(errDetail);
       }
 
       const reader = response.body?.getReader();
