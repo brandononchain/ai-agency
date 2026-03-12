@@ -7,19 +7,14 @@ interface AgentBadgeProps {
   vibe?: string;
 }
 
-export default function AgentBadge({ name, emoji, color, vibe }: AgentBadgeProps) {
+export default function AgentBadge({ name, emoji, color }: AgentBadgeProps) {
   return (
     <div
-      className="inline-flex items-center gap-2 px-3 py-1.5 border-2 border-brutal-black text-sm font-mono font-bold"
-      style={{ backgroundColor: color + "22" }}
+      className="inline-flex items-center gap-1.5 px-2 py-1 border-2 border-brutal-black text-xs font-mono font-bold"
+      style={{ backgroundColor: (color || "#888") + "22" }}
     >
-      <span>{emoji}</span>
-      <span className="uppercase text-xs tracking-wider">{name}</span>
-      {vibe && (
-        <span className="text-[10px] text-gray-500 normal-case font-normal hidden sm:inline">
-          — {vibe}
-        </span>
-      )}
+      <span className="text-sm">{emoji}</span>
+      <span className="uppercase text-[10px] tracking-wider truncate max-w-[140px] sm:max-w-none">{name}</span>
     </div>
   );
 }

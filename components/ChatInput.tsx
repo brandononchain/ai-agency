@@ -23,7 +23,6 @@ export default function ChatInput({ onSend, disabled, placeholder }: ChatInputPr
     if (!trimmed || disabled) return;
     onSend(trimmed);
     setInput("");
-    // Reset textarea height
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
@@ -36,17 +35,16 @@ export default function ChatInput({ onSend, disabled, placeholder }: ChatInputPr
     }
   };
 
-  // Auto-resize textarea
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
     const el = e.target;
     el.style.height = "auto";
-    el.style.height = Math.min(el.scrollHeight, 200) + "px";
+    el.style.height = Math.min(el.scrollHeight, 120) + "px";
   };
 
   return (
-    <div className="border-t-3 border-brutal-black bg-white p-4">
-      <div className="max-w-4xl mx-auto flex gap-3">
+    <div className="shrink-0 border-t-3 border-brutal-black bg-white px-3 py-2 safe-area-bottom">
+      <div className="max-w-4xl mx-auto flex gap-2 items-end">
         <textarea
           ref={textareaRef}
           value={input}
@@ -55,14 +53,20 @@ export default function ChatInput({ onSend, disabled, placeholder }: ChatInputPr
           disabled={disabled}
           placeholder={placeholder || "Tell the agency what you need..."}
           rows={1}
-          className="brutal-input resize-none text-sm flex-1"
+          className="flex-1 px-3 py-2.5 bg-white text-brutal-black font-mono text-sm
+            border-2 border-brutal-black resize-none
+            focus:outline-none focus:ring-0
+            placeholder:text-gray-400 placeholder:text-xs"
         />
         <button
           onClick={handleSubmit}
           disabled={disabled || !input.trim()}
-          className="brutal-btn text-sm px-4 py-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-brutal-black disabled:hover:text-white disabled:hover:shadow-brutal-sm disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+          className="shrink-0 px-4 py-2.5 bg-brutal-black text-white font-mono text-xs font-bold uppercase tracking-wider
+            border-2 border-brutal-black
+            disabled:opacity-30 disabled:cursor-not-allowed
+            active:bg-brutal-yellow active:text-brutal-black transition-colors"
         >
-          Send
+          {disabled ? "..." : "→"}
         </button>
       </div>
     </div>

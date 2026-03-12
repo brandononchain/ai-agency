@@ -5,7 +5,9 @@ import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import AgentBadge from "./AgentBadge";
 import AgentSidebar from "./AgentSidebar";
-import { Message } from "@/lib/types";
+import ChatHistory from "./ChatHistory";
+import { Message, ChatSession, TaskStep } from "@/lib/types";
+import { createSession, updateSession, getSession } from "@/lib/chat-store";
 
 interface AgentMeta {
   slug: string;
@@ -25,43 +27,78 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
   const [currentAgent, setCurrentAgent] = useState<AgentMeta | null>(null);
   const [selectedSlug, setSelectedSlug] = useState(initialAgentSlug || "");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [isRouting, setIsRouting] = useState(false);
+  const [sessionId, setSessionId] = useState<string | undefined>();
+  const [taskSteps, setTaskSteps] = useState<TaskStep[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
   }, []);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
+  // Save messages to session whenever they change (debounced by streaming end)
+  useEffect(() => {
+    if (sessionId && !isStreaming && messages.length > 0) {
+      updateSession(sessionId, {
+        messages,
+        agentSlug: currentAgent?.slug,
+        agentName: currentAgent?.name,
+        agentEmoji: currentAgent?.emoji,
+      });
+    }
+  }, [isStreaming, sessionId, messages, currentAgent]);
+
   const handleSend = async (content: string) => {
-    const userMessage: Message = { role: "user", content };
+    const userMessage: Message = { role: "user", content, timestamp: Date.now() };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setIsStreaming(true);
+
+    // Create session on first message
+    let sid = sessionId;
+    if (!sid) {
+      const session = createSession(content);
+      sid = session.id;
+      setSessionId(sid);
+    }
+
+    // Set up task steps
+    const steps: TaskStep[] = [
+      { label: "Analyzing request", status: "active" },
+      { label: "Selecting specialist", status: "pending" },
+      { label: "Generating response", status: "pending" },
+    ];
+    setTaskSteps(steps);
 
     if (!currentAgent && !selectedSlug) {
       setIsRouting(true);
     }
 
     // Add placeholder assistant message
-    const assistantMessage: Message = {
-      role: "assistant",
-      content: "",
-    };
+    const assistantMessage: Message = { role: "assistant", content: "", timestamp: Date.now() };
     setMessages([...newMessages, assistantMessage]);
 
     try {
+      // Step 1 done
+      setTaskSteps([
+        { label: "Analyzing request", status: "done" },
+        { label: "Selecting specialist", status: "active" },
+        { label: "Generating response", status: "pending" },
+      ]);
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: newMessages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
+          messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
           agentSlug: selectedSlug || undefined,
         }),
       });
@@ -80,7 +117,6 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
 
       const decoder = new TextDecoder();
       let fullContent = "";
-      let agentMeta: AgentMeta | null = null;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -97,11 +133,16 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
             const parsed = JSON.parse(data);
 
             if (parsed.type === "agent") {
-              agentMeta = parsed;
               setCurrentAgent(parsed);
               setIsRouting(false);
 
-              // Update the assistant message with agent info
+              // Step 2 done
+              setTaskSteps([
+                { label: "Analyzing request", status: "done" },
+                { label: `Routed → ${parsed.name}`, status: "done" },
+                { label: "Generating response", status: "active" },
+              ]);
+
               setMessages((prev) => {
                 const updated = [...prev];
                 const last = updated[updated.length - 1];
@@ -122,6 +163,11 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
                 }
                 return [...updated];
               });
+            } else if (parsed.type === "done") {
+              // All steps done
+              setTaskSteps((prev) =>
+                prev.map((s) => ({ ...s, status: "done" as const }))
+              );
             } else if (parsed.type === "error") {
               fullContent += `\n\n**Error**: ${parsed.error}`;
               setMessages((prev) => {
@@ -139,103 +185,138 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
         }
       }
     } catch (error) {
-      const errMsg =
-        error instanceof Error ? error.message : "Something went wrong";
+      const errMsg = error instanceof Error ? error.message : "Something went wrong";
       setMessages((prev) => {
         const updated = [...prev];
         const last = updated[updated.length - 1];
         if (last.role === "assistant") {
-          last.content = `**Error**: ${errMsg}. Make sure your ANTHROPIC_API_KEY is set in .env.local`;
+          last.content = `**Error**: ${errMsg}`;
           last.agentName = "System";
           last.agentEmoji = "⚠️";
         }
         return [...updated];
       });
+      setTaskSteps([]);
     } finally {
       setIsStreaming(false);
       setIsRouting(false);
+      // Clear task steps after a short delay so user sees them complete
+      setTimeout(() => setTaskSteps([]), 2000);
     }
   };
 
   const handleAgentSelect = (slug: string) => {
     setSelectedSlug(slug);
-    if (!slug) {
-      setCurrentAgent(null);
+    if (!slug) setCurrentAgent(null);
+  };
+
+  const handleLoadSession = (session: ChatSession) => {
+    setSessionId(session.id);
+    setMessages(session.messages);
+    setSelectedSlug(session.agentSlug || "");
+    if (session.agentName) {
+      setCurrentAgent({
+        slug: session.agentSlug || "",
+        name: session.agentName,
+        emoji: session.agentEmoji || "🤖",
+        color: "",
+        vibe: "",
+      });
     }
   };
 
+  const handleNewChat = () => {
+    setSessionId(undefined);
+    setMessages([]);
+    setCurrentAgent(null);
+    setSelectedSlug(initialAgentSlug || "");
+    setTaskSteps([]);
+  };
+
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
-      {/* Agent sidebar */}
+    <div className="flex flex-col h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-4rem)]">
+      {/* Sidebars */}
       <AgentSidebar
         selectedSlug={selectedSlug}
         onSelect={handleAgentSelect}
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
+      <ChatHistory
+        currentId={sessionId}
+        onSelect={handleLoadSession}
+        onNew={handleNewChat}
+        isOpen={historyOpen}
+        onToggle={() => setHistoryOpen(!historyOpen)}
+      />
 
-      {/* Top bar showing current agent */}
-      <div className="border-b-3 border-brutal-black bg-gray-50 px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      {/* Top bar */}
+      <div className="shrink-0 border-b-2 border-brutal-black bg-gray-50 px-3 py-1.5 flex items-center justify-between gap-2 min-h-[2.5rem]">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           {currentAgent ? (
             <AgentBadge
               name={currentAgent.name}
               emoji={currentAgent.emoji}
               color={currentAgent.color}
-              vibe={currentAgent.vibe}
             />
           ) : isRouting ? (
-            <span className="font-mono text-xs uppercase tracking-wider text-gray-500 animate-pulse">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-gray-500 animate-pulse">
               Routing to best agent...
             </span>
           ) : (
-            <span className="font-mono text-xs uppercase tracking-wider text-gray-500">
-              {selectedSlug
-                ? `Agent: ${selectedSlug}`
-                : "Auto-route — describe your task and the best agent will handle it"}
+            <span className="font-mono text-[10px] uppercase tracking-wider text-gray-400 truncate">
+              {selectedSlug ? selectedSlug : "Auto-route enabled"}
             </span>
           )}
         </div>
 
-        {messages.length > 0 && (
+        <div className="flex items-center gap-2 shrink-0">
+          {messages.length > 0 && (
+            <button
+              onClick={handleNewChat}
+              className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 hover:text-brutal-black transition-colors"
+            >
+              New
+            </button>
+          )}
           <button
-            onClick={() => {
-              setMessages([]);
-              setCurrentAgent(null);
-            }}
-            className="text-xs font-mono font-bold uppercase tracking-wider text-gray-400 hover:text-brutal-red transition-colors"
+            onClick={() => setHistoryOpen(true)}
+            className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 hover:text-brutal-black transition-colors"
           >
-            Clear
+            History
           </button>
-        )}
+        </div>
       </div>
 
-      {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      {/* Messages area — flex-1 with overflow scroll */}
+      <div
+        ref={scrollAreaRef}
+        className="flex-1 overflow-y-auto overscroll-contain px-3 py-4"
+        style={{ WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+      >
         <div className="max-w-4xl mx-auto">
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-center py-20">
-              <div className="text-6xl mb-6">🎯</div>
-              <h2 className="font-mono text-2xl font-extrabold uppercase tracking-tight mb-3">
+            <div className="flex flex-col items-center justify-center text-center py-12 sm:py-20">
+              <div className="text-5xl sm:text-6xl mb-4">🎯</div>
+              <h2 className="font-mono text-xl sm:text-2xl font-extrabold uppercase tracking-tight mb-2">
                 What do you need?
               </h2>
-              <p className="text-sm text-gray-500 max-w-md leading-relaxed mb-8">
-                Describe your task and the Agency will route you to the perfect
-                specialist. Or select an agent from the sidebar.
+              <p className="text-xs text-gray-500 max-w-sm leading-relaxed mb-6">
+                Describe your task. The best specialist handles it.
               </p>
-              <div className="flex flex-wrap gap-2 justify-center max-w-lg">
+              <div className="flex flex-wrap gap-1.5 justify-center max-w-md">
                 {[
-                  "Build me a React component with dark mode",
-                  "Audit my Solidity smart contract",
-                  "Design a token economy for my protocol",
-                  "Create a TikTok growth strategy",
-                  "Set up a CI/CD pipeline",
-                  "Analyze my A/B test results",
+                  "Build a React component",
+                  "Audit my smart contract",
+                  "Design token economics",
+                  "TikTok growth strategy",
+                  "Set up CI/CD pipeline",
+                  "Analyze A/B test results",
                 ].map((suggestion) => (
                   <button
                     key={suggestion}
                     onClick={() => handleSend(suggestion)}
-                    className="px-3 py-1.5 text-xs font-mono border-2 border-gray-300 hover:border-brutal-black hover:bg-brutal-yellow transition-all"
+                    className="px-2.5 py-1.5 text-[11px] font-mono border-2 border-gray-200 hover:border-brutal-black hover:bg-brutal-yellow transition-all active:bg-brutal-yellow"
                   >
                     {suggestion}
                   </button>
@@ -248,8 +329,11 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
             <ChatMessage
               key={i}
               message={msg}
-              isStreaming={
+              isStreaming={isStreaming && i === messages.length - 1 && msg.role === "assistant"}
+              taskSteps={
                 isStreaming && i === messages.length - 1 && msg.role === "assistant"
+                  ? taskSteps
+                  : undefined
               }
             />
           ))}
@@ -257,7 +341,7 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
         </div>
       </div>
 
-      {/* Input */}
+      {/* Input — pinned to bottom */}
       <ChatInput
         onSend={handleSend}
         disabled={isStreaming}

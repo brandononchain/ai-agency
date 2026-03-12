@@ -15,6 +15,23 @@ export interface Message {
   agentSlug?: string;
   agentName?: string;
   agentEmoji?: string;
+  timestamp?: number;
+}
+
+export interface ChatSession {
+  id: string;
+  title: string;
+  agentSlug?: string;
+  agentName?: string;
+  agentEmoji?: string;
+  messages: Message[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface TaskStep {
+  label: string;
+  status: "pending" | "active" | "done";
 }
 
 export interface ChatRequest {

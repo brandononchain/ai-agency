@@ -5,8 +5,11 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @layer base {
-  body {
+  html, body {
     @apply bg-brutal-white text-brutal-black font-sans antialiased;
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
   }
 
   ::selection {
@@ -19,13 +22,13 @@
 
   /* Scrollbar styling */
   ::-webkit-scrollbar {
-    @apply w-2;
+    @apply w-1.5;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-brutal-white;
+    @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-brutal-black;
+    @apply bg-gray-300 rounded-full;
   }
 }
 
@@ -80,41 +83,50 @@
   @apply text-brutal-black ml-0.5;
 }
 
-/* Markdown content styling in chat */
+/* Task step pulse */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+/* Markdown content styling in chat — compact for mobile */
 .chat-markdown h1,
 .chat-markdown h2,
 .chat-markdown h3 {
-  @apply font-bold mt-4 mb-2;
+  @apply font-bold mt-3 mb-1;
 }
-.chat-markdown h1 { @apply text-xl; }
-.chat-markdown h2 { @apply text-lg; }
-.chat-markdown h3 { @apply text-base; }
+.chat-markdown h1 { @apply text-base font-extrabold; }
+.chat-markdown h2 { @apply text-sm font-bold; }
+.chat-markdown h3 { @apply text-sm font-bold; }
 
 .chat-markdown p {
-  @apply mb-3 leading-relaxed;
+  @apply mb-2 leading-relaxed text-sm;
 }
 
 .chat-markdown ul, .chat-markdown ol {
-  @apply mb-3 pl-6;
+  @apply mb-2 pl-5 text-sm;
 }
 .chat-markdown ul { @apply list-disc; }
 .chat-markdown ol { @apply list-decimal; }
-.chat-markdown li { @apply mb-1; }
+.chat-markdown li { @apply mb-0.5; }
 
 .chat-markdown code {
-  @apply font-mono text-sm bg-gray-100 px-1.5 py-0.5 border border-gray-300;
+  @apply font-mono text-xs bg-gray-100 px-1 py-0.5 border border-gray-300 break-all;
 }
 
 .chat-markdown pre {
-  @apply mb-3 p-4 bg-brutal-black text-green-400 font-mono text-sm overflow-x-auto border-3 border-brutal-black;
+  @apply mb-2 p-3 bg-brutal-black text-green-400 font-mono text-xs overflow-x-auto border-2 border-brutal-black;
 }
 
 .chat-markdown pre code {
-  @apply bg-transparent border-none p-0 text-green-400;
+  @apply bg-transparent border-none p-0 text-green-400 break-normal;
 }
 
 .chat-markdown blockquote {
-  @apply border-l-4 border-brutal-black pl-4 italic my-3 text-gray-700;
+  @apply border-l-4 border-brutal-black pl-3 italic my-2 text-gray-700 text-sm;
 }
 
 .chat-markdown a {
@@ -126,11 +138,11 @@
 }
 
 .chat-markdown table {
-  @apply w-full mb-3 border-collapse border-3 border-brutal-black;
+  @apply w-full mb-2 border-collapse border-2 border-brutal-black text-xs;
 }
 .chat-markdown th {
-  @apply bg-brutal-black text-white font-mono text-sm px-3 py-2 text-left;
+  @apply bg-brutal-black text-white font-mono text-xs px-2 py-1.5 text-left;
 }
 .chat-markdown td {
-  @apply border border-gray-300 px-3 py-2 text-sm;
+  @apply border border-gray-300 px-2 py-1.5 text-xs;
 }
