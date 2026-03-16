@@ -304,22 +304,91 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
               <p className="text-xs text-gray-500 max-w-sm leading-relaxed mb-6">
                 Describe your task. The best specialist handles it.
               </p>
-              <div className="flex flex-wrap gap-1.5 justify-center max-w-md">
+
+              {/* Quick Action Categories */}
+              <div className="w-full max-w-2xl space-y-3">
                 {[
-                  "Build a React component",
-                  "Audit my smart contract",
-                  "Design token economics",
-                  "TikTok growth strategy",
-                  "Set up CI/CD pipeline",
-                  "Analyze A/B test results",
-                ].map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    onClick={() => handleSend(suggestion)}
-                    className="px-2.5 py-1.5 text-[11px] font-mono border-2 border-gray-200 hover:border-brutal-black hover:bg-brutal-yellow transition-all active:bg-brutal-yellow"
-                  >
-                    {suggestion}
-                  </button>
+                  {
+                    label: "🛠 Engineering",
+                    actions: [
+                      "Build a React component",
+                      "Set up CI/CD pipeline",
+                      "Review my API architecture",
+                    ],
+                  },
+                  {
+                    label: "📢 Marketing & Content",
+                    actions: [
+                      "TikTok growth strategy",
+                      "Write landing page copy",
+                      "Plan a podcast series",
+                    ],
+                  },
+                  {
+                    label: "💼 Business & Finance",
+                    actions: [
+                      "Build a financial model",
+                      "Review this contract",
+                      "Create a pitch deck outline",
+                    ],
+                  },
+                  {
+                    label: "👥 People & Ops",
+                    actions: [
+                      "Write a job description",
+                      "Design onboarding flow",
+                      "Automate a manual workflow",
+                    ],
+                  },
+                  {
+                    label: "🔒 Security & Compliance",
+                    actions: [
+                      "Audit my cloud security",
+                      "SOC 2 readiness checklist",
+                      "Penetration test plan",
+                    ],
+                  },
+                  {
+                    label: "📊 Data & Analytics",
+                    actions: [
+                      "Analyze A/B test results",
+                      "Build a KPI dashboard",
+                      "Customer churn analysis",
+                    ],
+                  },
+                  {
+                    label: "⛓️ Web3 & Spatial",
+                    actions: [
+                      "Audit my smart contract",
+                      "Design token economics",
+                      "Build a visionOS prototype",
+                    ],
+                  },
+                  {
+                    label: "🎓 Learning & Community",
+                    actions: [
+                      "Design a course curriculum",
+                      "Write API documentation",
+                      "Plan a developer hackathon",
+                    ],
+                  },
+                ].map((category) => (
+                  <div key={category.label}>
+                    <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 mb-1 text-left">
+                      {category.label}
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {category.actions.map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          onClick={() => handleSend(suggestion)}
+                          className="px-2.5 py-1.5 text-[11px] font-mono border-2 border-gray-200 hover:border-brutal-black hover:bg-brutal-yellow transition-all active:bg-brutal-yellow"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

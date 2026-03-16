@@ -16,6 +16,16 @@ export const AGENT_DIRS = [
   "web3",
   "ai-ops",
   "data-science",
+  "finance",
+  "hr",
+  "legal",
+  "operations",
+  "content",
+  "analytics",
+  "cybersecurity",
+  "education",
+  "customer-success",
+  "devrel",
 ];
 
 export const CATEGORIES: AgentCategory[] = [
@@ -34,6 +44,16 @@ export const CATEGORIES: AgentCategory[] = [
   { name: "spatial-computing", label: "Spatial Computing", emoji: "🥽" },
   { name: "specialized", label: "Specialized", emoji: "🎯" },
   { name: "game-development", label: "Game Development", emoji: "🎮" },
+  { name: "finance", label: "Finance", emoji: "💵" },
+  { name: "hr", label: "Human Resources", emoji: "👥" },
+  { name: "legal", label: "Legal", emoji: "⚖️" },
+  { name: "operations", label: "Operations", emoji: "⚙️" },
+  { name: "content", label: "Content", emoji: "✍️" },
+  { name: "analytics", label: "Analytics", emoji: "📈" },
+  { name: "cybersecurity", label: "Cybersecurity", emoji: "🔒" },
+  { name: "education", label: "Education", emoji: "🎓" },
+  { name: "customer-success", label: "Customer Success", emoji: "🤝" },
+  { name: "devrel", label: "Developer Relations", emoji: "🥑" },
 ];
 
 export const NAMED_COLORS: Record<string, string> = {

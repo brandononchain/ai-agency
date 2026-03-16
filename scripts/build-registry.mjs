@@ -32,6 +32,16 @@ const AGENT_DIRS = [
   "web3",
   "ai-ops",
   "data-science",
+  "finance",
+  "hr",
+  "legal",
+  "operations",
+  "content",
+  "analytics",
+  "cybersecurity",
+  "education",
+  "customer-success",
+  "devrel",
 ];
 
 function findMarkdownFiles(dir) {
