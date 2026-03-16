@@ -6,8 +6,11 @@ import ChatInput from "./ChatInput";
 import AgentBadge from "./AgentBadge";
 import AgentSidebar from "./AgentSidebar";
 import ChatHistory from "./ChatHistory";
+import ApiKeyModal from "./ApiKeyModal";
+import ApiKeyGate from "./ApiKeyGate";
 import { Message, ChatSession, TaskStep } from "@/lib/types";
 import { createSession, updateSession, getSession } from "@/lib/chat-store";
+import { hasApiKey, getApiKey } from "@/lib/api-key-store";
 
 interface AgentMeta {
   slug: string;
@@ -31,8 +34,15 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
   const [isRouting, setIsRouting] = useState(false);
   const [sessionId, setSessionId] = useState<string | undefined>();
   const [taskSteps, setTaskSteps] = useState<TaskStep[]>([]);
+  const [apiKeyReady, setApiKeyReady] = useState(false);
+  const [keyModalOpen, setKeyModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Check for API key on mount
+  useEffect(() => {
+    setApiKeyReady(hasApiKey());
+  }, []);
 
   const scrollToBottom = useCallback(() => {
     if (scrollAreaRef.current) {
@@ -94,9 +104,13 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
         { label: "Generating response", status: "pending" },
       ]);
 
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      const userKey = getApiKey();
+      if (userKey) headers["x-api-key"] = userKey;
+
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
           agentSlug: selectedSlug || undefined,
@@ -233,8 +247,22 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
     setTaskSteps([]);
   };
 
+  // Gate: require API key before showing chat
+  if (!apiKeyReady) {
+    return (
+      <ApiKeyGate onKeySet={() => setApiKeyReady(true)} />
+    );
+  }
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      {/* Modals */}
+      <ApiKeyModal
+        isOpen={keyModalOpen}
+        onClose={() => setKeyModalOpen(false)}
+        onKeySaved={() => setApiKeyReady(hasApiKey())}
+      />
+
       {/* Sidebars */}
       <AgentSidebar
         selectedSlug={selectedSlug}
@@ -284,6 +312,13 @@ export default function ChatInterface({ initialAgentSlug }: ChatInterfaceProps) 
             className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 hover:text-brutal-black transition-colors"
           >
             History
+          </button>
+          <button
+            onClick={() => setKeyModalOpen(true)}
+            className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 hover:text-brutal-black transition-colors"
+            title="API Key Settings"
+          >
+            🔑
           </button>
         </div>
       </div>

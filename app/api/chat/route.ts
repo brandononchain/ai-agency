@@ -6,11 +6,14 @@ import { resolveColor } from "@/lib/constants";
 
 export async function POST(req: Request) {
   try {
-    // Check API key first
-    if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === "your-api-key-here") {
+    // Get API key from request header or fall back to env
+    const userApiKey = req.headers.get("x-api-key") || undefined;
+    const apiKey = userApiKey || process.env.ANTHROPIC_API_KEY;
+
+    if (!apiKey || apiKey === "your-api-key-here") {
       return new Response(
-        JSON.stringify({ error: "ANTHROPIC_API_KEY is not configured. Add it to your environment variables." }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+        JSON.stringify({ error: "No API key provided. Please add your Anthropic API key in settings." }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -34,7 +37,7 @@ export async function POST(req: Request) {
     if (!agent) {
       const firstUserMsg = messages.find((m) => m.role === "user");
       if (firstUserMsg) {
-        agent = await routeToAgent(firstUserMsg.content);
+        agent = await routeToAgent(firstUserMsg.content, apiKey);
       }
     }
 
@@ -51,7 +54,7 @@ export async function POST(req: Request) {
       content: m.content,
     }));
 
-    const client = getClient();
+    const client = getClient(apiKey);
 
     // Stream the response
     const stream = await client.messages.stream({

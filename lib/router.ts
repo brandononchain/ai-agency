@@ -21,12 +21,12 @@ INSTRUCTIONS:
 Respond with exactly this JSON format:
 {"slug": "agent-slug-here", "reasoning": "One sentence explaining why this agent is the best match"}`;
 
-export async function routeToAgent(userMessage: string): Promise<Agent> {
+export async function routeToAgent(userMessage: string, apiKey?: string): Promise<Agent> {
   const manifest = buildAgentManifest();
   const systemPrompt = ROUTER_SYSTEM_PROMPT.replace("{{MANIFEST}}", manifest);
 
   try {
-    const client = getClient();
+    const client = getClient(apiKey);
     const response = await client.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 200,
